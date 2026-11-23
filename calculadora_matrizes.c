@@ -1,8 +1,3 @@
-/*
- * Calculadora de Matrizes em C
- * Operações: adição, subtração, multiplicação e divisão matricial (A / B = A x B^-1)
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -16,8 +11,6 @@ typedef struct {
     int colunas;
     double dados[MAX_DIM][MAX_DIM];
 } Matriz;
-
-/* ---------- Leitura e validação de dados ---------- */
 
 int lerInteiro(const char *mensagem, int minimo, int maximo) {
     char buffer[100];
@@ -77,8 +70,6 @@ void lerMatriz(Matriz *m, int numero) {
     }
 }
 
-/* ---------- Exibição ---------- */
-
 void exibirMatriz(const Matriz *m) {
     int i, j;
     double valor;
@@ -88,7 +79,7 @@ void exibirMatriz(const Matriz *m) {
         for (j = 0; j < m->colunas; j++) {
             valor = m->dados[i][j];
             if (fabs(valor) < TOLERANCIA) {
-                valor = 0.0; /* evita imprimir -0.000 */
+                valor = 0.0;
             }
             printf("%10.3f ", valor);
         }
@@ -105,8 +96,6 @@ void exibirMenu(void) {
     printf("0 - Encerrar programa\n");
 }
 
-/* ---------- Validação das dimensões ---------- */
-
 int mesmasDimensoes(const Matriz *a, const Matriz *b) {
     return a->linhas == b->linhas && a->colunas == b->colunas;
 }
@@ -118,9 +107,6 @@ int podeMultiplicar(const Matriz *a, const Matriz *b) {
 int ehQuadrada(const Matriz *m) {
     return m->linhas == m->colunas;
 }
-
-/* ---------- Operações entre duas matrizes ---------- */
-/* Todas retornam 1 se deu certo e 0 se não foi possível realizar. */
 
 int somar(const Matriz *a, const Matriz *b, Matriz *res) {
     int i, j;
@@ -179,14 +165,12 @@ int multiplicar(const Matriz *a, const Matriz *b, Matriz *res) {
     return 1;
 }
 
-/* Calcula a inversa pelo método de Gauss-Jordan. Retorna 0 se a matriz for singular. */
 int inverter(const Matriz *m, Matriz *inv) {
     double aux[MAX_DIM][MAX_DIM];
     int n = m->linhas;
     int i, j, k, linhaPivo;
     double pivo, fator, temp;
 
-    /* aux começa como a matriz original; inv começa como a identidade */
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             aux[i][j] = m->dados[i][j];
@@ -197,7 +181,7 @@ int inverter(const Matriz *m, Matriz *inv) {
     inv->colunas = n;
 
     for (i = 0; i < n; i++) {
-        /* escolhe a linha com maior valor absoluto na coluna i */
+
         linhaPivo = i;
         for (k = i + 1; k < n; k++) {
             if (fabs(aux[k][i]) > fabs(aux[linhaPivo][i])) {
@@ -205,9 +189,9 @@ int inverter(const Matriz *m, Matriz *inv) {
             }
         }
         if (fabs(aux[linhaPivo][i]) < TOLERANCIA) {
-            return 0; /* singular */
+            return 0;
         }
-        /* troca as linhas */
+
         if (linhaPivo != i) {
             for (j = 0; j < n; j++) {
                 temp = aux[i][j];
@@ -219,13 +203,13 @@ int inverter(const Matriz *m, Matriz *inv) {
                 inv->dados[linhaPivo][j] = temp;
             }
         }
-        /* divide a linha pelo pivô */
+
         pivo = aux[i][i];
         for (j = 0; j < n; j++) {
             aux[i][j] /= pivo;
             inv->dados[i][j] /= pivo;
         }
-        /* zera a coluna i nas outras linhas */
+
         for (k = 0; k < n; k++) {
             if (k != i) {
                 fator = aux[k][i];
@@ -259,9 +243,6 @@ int dividir(const Matriz *a, const Matriz *b, Matriz *res) {
     return multiplicar(a, &inversa, res);
 }
 
-/* ---------- Execução da operação escolhida ---------- */
-
-/* Aplica a operação em sequência, da esquerda para a direita: ((M1 op M2) op M3) ... */
 int executarOperacao(int opcao, const Matriz matrizes[], int quantidade, Matriz *resultado) {
     Matriz parcial, novo;
     int i, ok;
@@ -284,8 +265,6 @@ int executarOperacao(int opcao, const Matriz matrizes[], int quantidade, Matriz 
     *resultado = parcial;
     return 1;
 }
-
-/* ---------- Programa principal ---------- */
 
 int main(void) {
     Matriz matrizes[MAX_MATRIZES];
